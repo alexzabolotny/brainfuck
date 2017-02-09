@@ -1,0 +1,16 @@
+{
+    "name": "azabolotnyi/bf",
+    "autoload": {
+        "psr-4": {
+            "Bf\\": "app/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^4.0"
+    },
+    "autoload-dev": {
+        "classmap": [
+            "tests"
+        ]
+    }
+}
