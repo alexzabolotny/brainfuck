@@ -28,7 +28,7 @@ class ProgramTest extends TestCase {
 	public function initial_pointer_position_is_at_beginning_of_tape() {
 		$program = new Program();
 
-		$this->assertEquals(0, $program->pointer());
+		$this->assertEquals(0, $program->tapePointer());
 	}
 
 	/** @test */
@@ -65,26 +65,26 @@ class ProgramTest extends TestCase {
 		$program = new Program();
 
 		$program->execute('>');
-		$this->assertEquals(1, $program->pointer());
+		$this->assertEquals(1, $program->tapePointer());
 
 		$program->execute('>');
-		$this->assertEquals(2, $program->pointer());
+		$this->assertEquals(2, $program->tapePointer());
 
 		$program->execute('<');
-		$this->assertEquals(1, $program->pointer());
+		$this->assertEquals(1, $program->tapePointer());
 	}
 
 	/** @test */
 	public function cannot_move_pointer_past_boundaries() {
 		$program = new Program();
-		$this->assertEquals(0, $program->pointer());
+		$this->assertEquals(0, $program->tapePointer());
 
 		$program->execute('<');
-		$this->assertEquals(0, $program->pointer());
+		$this->assertEquals(0, $program->tapePointer());
 
-		$program->pointer(30000);
+		$program->tapePointer(30000);
 		$program->execute('>');
-		$this->assertEquals(30000, $program->pointer());
+		$this->assertEquals(30000, $program->tapePointer());
 	}
 
 	/** @test */
@@ -148,9 +148,9 @@ class ProgramTest extends TestCase {
 		$program = new Program();
 
 		$this->assertEquals([], $program->findLoopPairs([]));
-		$this->assertEquals([[0, 1]], $program->findLoopPairs(str_split('[]')));
-		$this->assertEquals([[5, 8], [2, 11]], $program->findLoopPairs(str_split('..[..[--]++]..')));
-		$this->assertEquals([[1, 2], [3, 4], [0, 5]], $program->findLoopPairs(str_split('[[][]]')));
+		$this->assertEquals([0 => 1, 1 => 0], $program->findLoopPairs(str_split('[]')));
+		$this->assertEquals([5 => 8, 8 => 5, 2 => 11, 11 => 2], $program->findLoopPairs(str_split('..[..[--]++]..')));
+		$this->assertEquals([1 => 2, 2 => 1, 3 => 4, 4 => 3, 0 => 5, 5 => 0], $program->findLoopPairs(str_split('[[][]]')));
 	}
 
 	/** @test */
@@ -186,7 +186,7 @@ class ProgramTest extends TestCase {
 
 	/**
 	 * @test
-	 * @group Foo
+	 * @group Performance
 	 */
 	public function loops_performance() {
 		$program = new Program();

@@ -24,6 +24,7 @@ class Program {
 		$this->reader = $reader;
 	}
 
+	// Use to define state before running code (e.g. for bulk data load) or to read state in tests.
 	public function tape($tape = null) {
 		if (!is_null($tape) && is_array($tape)) {
 			$this->tape = $tape;
@@ -32,7 +33,8 @@ class Program {
 		return $this->tape;
 	}
 
-	public function pointer($pointer = null) {
+	// Set/get tape pointer.
+	public function tapePointer($pointer = null) {
 		if (!is_null($pointer) && $pointer >= 0 && $pointer <= self::TAPE_SIZE) {
 			$this->dataPointer = $pointer;
 		}
@@ -79,7 +81,9 @@ class Program {
 				$positions->push($position);
 			}
 			if ($c == ']') {
-				$this->loopPairs[] = [$positions->pop(), $position];
+				$pos = $positions->pop();
+				$this->loopPairs[$pos] = $position;
+				$this->loopPairs[$position] = $pos;
 			}
 			$position++;
 		}
@@ -142,13 +146,8 @@ class Program {
 	}
 
 	private function findLoopPair() {
-		foreach ($this->loopPairs as $pair) {
-			if ($pair[0] == $this->executionPointer) {
-				return $pair[1];
-			}
-			if ($pair[1] == $this->executionPointer) {
-				return $pair[0];
-			}
+		if (isset($this->loopPairs[$this->executionPointer])) {
+			return $this->loopPairs[$this->executionPointer];
 		}
 		throw new UnbalancedLoop();
 	}
