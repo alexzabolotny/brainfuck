@@ -45,8 +45,7 @@ class Program {
 
 		$commands = str_split($programCode);
 
-		$this->checkLoopBalance($commands);
-		$this->loopPairs = $this->findLoopPairs($commands);
+		$this->findLoopPairs($commands);
 
 		$executionEnd = count($commands);
 
@@ -55,23 +54,35 @@ class Program {
 		}
 	}
 
-	// this assumes we have balanced braces
 	public function findLoopPairs($commands) {
-		$pairs = [];
-		$lastTailPosition = count($commands) - 1;
-		for ($i = 0; $i < count($commands) && $i < $lastTailPosition; $i++) {
-			if ($commands[$i] == '[') {
-				for ($j = $lastTailPosition; $j > $i; $j--) {
-					if ($commands[$j] == ']') {
-						$pairs[] = [$i, $j];
-						$lastTailPosition = $j - 1;
-						break;
-					}
-				}
-			}
+		$this->checkLoopBalance($commands);
+
+		$this->loopPairs = [];
+
+		$this->findLoopPairsRecursive($commands);
+
+		return $this->loopPairs;
+	}
+
+	// this assumes we have balanced braces
+	private function findLoopPairsRecursive($commands) {
+		$stack = new \SplStack();
+		foreach (array_reverse($commands) as $command) {
+			$stack->push($command);
 		}
 
-		return $pairs;
+		$positions = new \SplStack();
+		$position = 0;
+		while (!$stack->isEmpty()) {
+			$c = $stack->pop();
+			if ($c == '[') {
+				$positions->push($position);
+			}
+			if ($c == ']') {
+				$this->loopPairs[] = [$positions->pop(), $position];
+			}
+			$position++;
+		}
 	}
 
 	private function executeCommand($command) {

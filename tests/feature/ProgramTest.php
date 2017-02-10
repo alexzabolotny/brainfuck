@@ -136,23 +136,21 @@ class ProgramTest extends TestCase {
 		return [
 			[']'],
 			['['],
-			['[[]'],
 			['[]]'],
-			[']][['],
+			['[]['],
+			['[[]'],
+			['][]'],
 		];
 	}
 
-	/**
-	 * @test
-	 * @group Foo
-	 */
+	/** @test */
 	public function can_find_pairs_of_loop_brackets() {
 		$program = new Program();
 
 		$this->assertEquals([], $program->findLoopPairs([]));
 		$this->assertEquals([[0, 1]], $program->findLoopPairs(str_split('[]')));
-		$this->assertEquals([[2, 11], [5, 8]], $program->findLoopPairs(str_split('..[..[--]++]..')));
-		$this->assertEquals([[0, 5], [1, 2], [3, 4]], $program->findLoopPairs(str_split('[[][]]')));
+		$this->assertEquals([[5, 8], [2, 11]], $program->findLoopPairs(str_split('..[..[--]++]..')));
+		$this->assertEquals([[1, 2], [3, 4], [0, 5]], $program->findLoopPairs(str_split('[[][]]')));
 	}
 
 	/** @test */
@@ -178,11 +176,24 @@ class ProgramTest extends TestCase {
 		$writer = new MemoryWriter();
 		$program = new Program($writer);
 
-		$program->execute('++++++>+++++++< [ > [ >+ >+ << -] >> [- << + >>] <<< -] >>');
+		$program->execute('++++++>+++++++< [ > [ >+ >+ << -] >> [- << + >>] <<< -] >> .');
 		$this->assertEquals([42], $writer->flush());
 	}
 
 	private function cleanTape() {
 		return array_fill(0, 30000, 0);
+	}
+
+	/**
+	 * @test
+	 * @group Foo
+	 */
+	public function loops_performance() {
+		$program = new Program();
+
+		for ($i = 0; $i < 1000; $i++) {
+			$program->tape($this->cleanTape());
+			$program->execute('++++++>+++++++< [ > [ >+ >+ << -] >> [- << + >>] <<< -] >>');
+		}
 	}
 }
