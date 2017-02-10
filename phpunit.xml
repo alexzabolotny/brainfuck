@@ -11,8 +11,9 @@
             <directory suffix="Test.php">tests/</directory>
         </testsuite>
     </testsuites>
-    <listeners>
-        <!-- print test elapsed time after each test ends, better to keep it disabled and use for profiling only -->
-        <!-- listener class="Mercury\Test\ElapsedTimePrinter"/ -->
-    </listeners>
+    <groups>
+        <exclude>
+            <group>Performance</group>
+        </exclude>
+    </groups>
 </phpunit>
