@@ -1,0 +1,17 @@
+#!/usr/bin/env php
+<?php
+require_once __DIR__.'/../vendor/autoload.php';
+
+use Bf\Program;
+use Bf\Reader\MemoryReader;
+use Bf\Writer\StdoutWriter;
+
+$program = new Program(new StdoutWriter('php://stdout'), new MemoryReader());
+if (isset($argv[1])) {
+    $code = file_get_contents($argv[1]);
+    $program->execute($code);
+    exit(0);
+}
+
+echo 'Usage: bf <program.bf>'.PHP_EOL;
+exit(0);
